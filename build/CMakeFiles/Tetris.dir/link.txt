@@ -1,0 +1,1 @@
+/Library/Developer/CommandLineTools/usr/bin/c++  -O3 -DNDEBUG -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/Tetris.dir/src/main.cpp.o CMakeFiles/Tetris.dir/src/helpers.cpp.o  -o Tetris glfw/src/libglfw3.a glad/libglad.a -framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo 
