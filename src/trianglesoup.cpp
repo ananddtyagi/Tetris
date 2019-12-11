@@ -644,6 +644,7 @@ int main(void) {
 		// Convert screen position to world coordinates
 		// double xworld = ((xpos/double(width))*2)-1;
 		// double yworld = (((height-1-ypos)/double(height))*2)-1; // NOTE: y axis is flipped in glfw
+		std::cout << xpos << '\n';
 		Vector4f p_screen(xpos,height-1-ypos,0,1);
 		Vector4f p_canonical((p_screen[0]/width)*2-1,(p_screen[1]/height)*2-1,0,1);
 		Vector4f p_world = view.inverse()*p_canonical;

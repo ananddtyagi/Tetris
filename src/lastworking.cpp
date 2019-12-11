@@ -72,7 +72,7 @@ void updatescene(){
 		currentshape << currentshape.block(0,0,2,i*6), tempshape;
 	}
 
-	
+
 
 	scene << scene.block(0,0,2,scene.cols()-shapecols) , currentshape;
 
