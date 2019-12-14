@@ -425,6 +425,9 @@ int changeshape(){
 		if(currentsquares(i,1) == 0){
 			return 0;
 		}
+		if(shapecollisionleft() == 1 || shapecollisionright() == 1){
+			return 0;
+		}
 	}
 
 	return 1;
