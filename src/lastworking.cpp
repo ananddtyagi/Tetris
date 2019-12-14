@@ -7,10 +7,15 @@
 #include <Eigen/Dense>
 // Timer
 #include <chrono>
+#include <thread>
+//Random number
+#include <stdlib.h>
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool begun = false;
-
+bool paused = false;
+bool gaemover = false;
 // VertexBufferObject wrapper
 VertexBufferObject VBO;
 VertexBufferObject VBO_C;
@@ -45,9 +50,11 @@ Eigen::MatrixXf left(4,2);
 Eigen::MatrixXf right(4,2);
 
 
-
 int inround = 0;
 double speed = 1;
+int score = 0;
+int shape = 0;
+int orientation = 0;
 
 int width, height;
 
@@ -58,27 +65,60 @@ int width_window, height_window;
 
 void updatescene(){
 
-	std::cout << board << '\n';
+	scene.conservativeResize(2, 6+(200*2*3)); //6 for the background and then 200 squares, 2 triangles per square, 3 points per triangle.
+	scene << scene.block(0,0,2,6), Eigen::MatrixXf::Zero(2, 200*2*3); //reset scene, keep the background
 
-	tempsquares << currentsquares(0,0) * 0.2 - 1, currentsquares(0,1) * 0.1 - 1,
-								 currentsquares(1,0) * 0.2 - 1, currentsquares(1,1) * 0.1 - 1,
-								 currentsquares(2,0) * 0.2 - 1, currentsquares(2,1) * 0.1 - 1,
-								 currentsquares(3,0) * 0.2 - 1, currentsquares(3,1) * 0.1 - 1;
-
-	currentshape.resize(2,shapecols);
-	for(int i = 0; i < 4; i++){ //enter one square at a time
-		tempshape << tempsquares(i,0), tempsquares(i,0), tempsquares(i,0) + 0.2, tempsquares(i,0), tempsquares(i,0) + 0.2, tempsquares(i,0) + 0.2,
-								tempsquares(i,1), tempsquares(i,1)+0.1, tempsquares(i,1), tempsquares(i,1)+0.1, tempsquares(i,1), tempsquares(i,1) + 0.1,
-		currentshape << currentshape.block(0,0,2,i*6), tempshape;
+	//Redraw the entire scene
+	for(int i = 0; i < 10; i++){
+		for(int  j = 0; j < 20; j++){
+			if(board(i,j) == 1){
+				scene(0, 6+(60*j+6*i))   = i * 0.2 - 1; 				scene(1, 6+(60*j+6*i))   = j * 0.1 - 1;
+				scene(0, 6+(60*j+6*i)+1) = i * 0.2 - 1; 				scene(1, 6+(60*j+6*i)+1) = j * 0.1 - 1 + 0.1;
+				scene(0, 6+(60*j+6*i)+2) = i * 0.2 - 1 + 0.2;		scene(1, 6+(60*j+6*i)+2) = j * 0.1 - 1;
+				scene(0, 6+(60*j+6*i)+3) = i * 0.2 - 1;					scene(1, 6+(60*j+6*i)+3) = j * 0.1 - 1 + 0.1;
+				scene(0, 6+(60*j+6*i)+4) = i * 0.2 - 1 + 0.2; 	scene(1, 6+(60*j+6*i)+4) = j * 0.1 - 1;
+				scene(0, 6+(60*j+6*i)+5) = i * 0.2 - 1 + 0.2; 	scene(1, 6+(60*j+6*i)+5) = j * 0.1 - 1 + 0.1;
+			} else {
+				scene(0, 6+(60*j+6*i))   = 0; 									scene(1, 6+(60*j+6*i))   = 0;
+				scene(0, 6+(60*j+6*i)+1) = 0; 									scene(1, 6+(60*j+6*i)+1) = 0;
+				scene(0, 6+(60*j+6*i)+2) = 0;										scene(1, 6+(60*j+6*i)+2) = 0;
+				scene(0, 6+(60*j+6*i)+3) = 0;										scene(1, 6+(60*j+6*i)+3) = 0;
+				scene(0, 6+(60*j+6*i)+4) = 0; 									scene(1, 6+(60*j+6*i)+4) = 0;
+				scene(0, 6+(60*j+6*i)+5) = 0; 									scene(1, 6+(60*j+6*i)+5) = 0;
+			}
+		}
 	}
 
-
-
-	scene << scene.block(0,0,2,scene.cols()-shapecols) , currentshape;
-
+	VBO.update(scene);
 }
 
 
+int checkboard(){ //1 = did NOT hit, 0 = hit
+		for (int i = 0; i < 4; i++){
+			if(lastboard(currentsquares(i,0),currentsquares(i,1)-1) == 1){ //if this next move down in that column will be a collision, end round
+				return 0;
+			}
+			if(currentsquares(i,1) == 0){
+				return 0;
+			}
+		}
+
+return 1;
+}
+
+void update(){
+	board << lastboard;
+	for(int i = 0; i < 4; i++){
+		if(currentsquares(i, 1) < 20){
+			board(currentsquares(i,0),currentsquares(i,1)) = 1;
+		} else {
+			if(checkboard() == 0){ //hitting a block on the top
+				begun = false;
+				gaemover = true;
+			}
+		}
+	}
+}
 
 int shapecollisionleft(){
 	if(currentsquares(0,0) - 1 < 0 || currentsquares(1,0) - 1 < 0 || currentsquares(2,0) - 1 < 0 || currentsquares(3,0) - 1 < 0){
@@ -105,6 +145,92 @@ int shapecollisionright(){
 
 	return 0;
 }
+
+void createshape(){ //craetes a new shape and sets it as the current shape.
+	shape = rand() % 7 + 1;
+	switch(shape){
+		case 1:
+			//square
+		  currentsquares << 0, 20,
+												0, 21,
+											 	1, 20,
+												1, 21;
+			break;
+		case 2:
+			//T
+			currentsquares << 0, 20,
+												1, 21,
+												1, 20,
+												2, 20;
+			break;
+		case 3:
+			//I
+			currentsquares << 0, 20,
+												0, 21,
+												0, 22,
+												0, 23;
+		break;
+		case 4:
+			//Backwards L
+			currentsquares << 0, 20,
+												0, 21,
+												0, 22,
+												1, 22;
+		break;
+		case 5:
+			//L
+			currentsquares << 0, 20,
+												1, 20,
+												0, 21,
+												0, 22;
+		break;
+		case 6:
+			//S
+			currentsquares << 0, 20,
+												1, 20,
+												1, 21,
+												2, 21;
+		break;
+		case 7:
+			//Z
+			currentsquares << 0, 21,
+												1, 21,
+												1, 20,
+												2, 20;
+		break;
+	}
+
+
+	speed = 1;
+}
+
+void movedown(){
+
+	currentsquares = currentsquares + fall;
+	// currentsquares = currentsquares + speed*fall;
+
+}
+
+
+
+int won(){
+
+	for(int j = 19; j >= 0; j--){
+		for(int i = 0; i < 10; i++){
+			if(board(i,j) == 0){ //not a complete row
+				break;
+			}
+			if(i < 9){ //not at the end of the row yet, but everything so far is a 1.
+				continue;
+			}
+
+			//CLEAR ROW I AND UPDATE BOARD (NEED TO MOVE EVERYTHING DOWN)
+			return j;
+		}
+	}
+	return -1;
+}
+
 
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
@@ -136,114 +262,235 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if(key == GLFW_KEY_B){
 		begun = true;
 	}
-	if(key == GLFW_KEY_LEFT && action == GLFW_PRESS && inround == 1){
-
-		if(shapecollisionleft() == 0){ //did not collide
-			currentsquares <<	currentsquares + left;
-		}
-		updatescene();
-		VBO.update(scene);
-
+	if(key == GLFW_KEY_P && action == GLFW_PRESS){
+		paused = !paused;
 	}
-	if(key == GLFW_KEY_RIGHT && action == GLFW_PRESS && inround == 1){
 
-			if(shapecollisionright() == 0){
-				currentsquares <<	currentsquares + right;
+	if(!paused){
+		if(key == GLFW_KEY_LEFT && action == GLFW_PRESS && inround == 1){
+			if(shapecollisionleft() == 0){ //did not collide
+				currentsquares <<	currentsquares + left;
 			}
+			update();
 			updatescene();
 
+			VBO.update(scene);
 
-		VBO.update(scene);
+		}
+		if(key == GLFW_KEY_RIGHT && action == GLFW_PRESS && inround == 1){
 
-	}
-	if(key == GLFW_KEY_DOWN && action == GLFW_PRESS && inround == 1){
+				if(shapecollisionright() == 0){
+					currentsquares <<	currentsquares + right;
+				}
+				update();
+				updatescene();
 
-			speed += + 0.1;
-			std::cout << speed << '\n';
-			updatescene();
+
+			VBO.update(scene);
+
+		}
+		if(key == GLFW_KEY_DOWN && inround == 1){
+
+				if(speed > 0){
+					speed -= 0.01;
+				}
+				update();
+				updatescene();
 
 
-		VBO.update(scene);
+			VBO.update(scene);
+
+		}
+		if(key == GLFW_KEY_UP && inround == 1){
+
+				if(speed > 0){
+					speed += 0.01;
+				}
+				update();
+				updatescene();
+
+
+			VBO.update(scene);
+
+		}
+		if(key == GLFW_KEY_X && inround == 1){ //Clockwise
+
+				switch(shape){
+					case 2:
+						switch(orientation){
+							case 0:
+
+								break;
+							case 1:
+
+								break;
+							case 2:
+
+								break;
+							case 3:
+
+								break;
+						}
+						break;
+					case 3:
+						switch(orientation){
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+					case 4:
+						switch(orientation){
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+					case 5:
+						switch(orientation){
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+					case 6:
+						switch(orientation){
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+					case 7:
+						switch(orientation){
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+				}
+
+				update();
+				updatescene();
+			VBO.update(scene);
+
+		}
+		if(key == GLFW_KEY_Z && inround == 1){ //Counter Clockwise
+
+				switch(shape){
+					case 2:
+						switch(orientation){
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+					case 3:
+						switch(orientation){
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+					case 4:
+						switch(orientation){
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+					case 5:
+						switch(orientation){
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+					case 6:
+						switch(orientation){
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+					case 7:
+						switch(orientation){
+							case 0:
+								break;
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+						}
+						break;
+				}
+
+				update();
+				updatescene();
+			VBO.update(scene);
+
+		}
+
 
 	}
 
 
 	// Upload the change to the GPU
+	updatescene();
 	VBO.update(scene);
 }
 
-
-
-
-void createshape(){ //craetes a new shape and sets it as the current shape.
-
-	//square
-  currentsquares << 0, 19,
-										0, 20,
-									 	1, 19,
-										1, 20;
-	scene.conservativeResize(2,scene.cols() + shapecols);
-
-	color.conservativeResize(3, color.cols() + shapecols);
-	shapecolor << 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0,
-								0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0,
-								0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0;
-	tempscene << 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0,
-								0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0;
-
-	scene << scene.block(0,0,2,scene.cols()-shapecols), tempscene;
-	color << color.block(0,0,3,color.cols()-shapecols), shapecolor;
-
-	speed = 1;
-}
-
-void movedown(){
-	currentsquares = currentsquares + 4*fall;
-	// currentsquares = currentsquares + speed*fall;
-
-}
-
-void update(){
-
-	board << lastboard;
-	board(currentsquares(0,0),currentsquares(0,1)) = 1;
-	board(currentsquares(1,0),currentsquares(1,1)) = 1;
-	board(currentsquares(2,0),currentsquares(2,1)) = 1;
-	board(currentsquares(3,0),currentsquares(3,1)) = 1;
-
-}
-
-int checkboard(){ //1 = did NOT hit, 0 = hit
-		for (int i = 0; i < 4; i++){
-			if(lastboard(currentsquares(i,0),currentsquares(i,1)-1) == 1){ //if this next move down in that column will be a collision, end round
-				return 0;
-			}
-			if(currentsquares(i,1) == 0){
-				return 0;
-			}
-		}
-
-return 1;
-}
-
-void won(){
-
-	for(int i = 0; i < 20; i++){
-		for(int j = 0; j < 10; j++){
-			if(board(j,i) == 0){ //not a complete row
-				break;
-			}
-			if(j < 9){ //not at the end of the row yet, but everything so far is a 1.
-				continue;
-			}
-			//CLEAR ROW I AND UPDATE BOARD
-			board.col(i) << 0,0,0,0,0,0,0,0,0,0;
-			updatescene();
-			//HAVE TO REGENERATE SCENE EVERYTIME
-		}
-	}
-
-}
 
 int main(void) {
 	// Initialize the GLFW library
@@ -326,6 +573,7 @@ int main(void) {
 	scene << 0,0,0,0,0,0,
 					0,0,0,0,0,0;
 
+	updatescene();
   VBO_C.update(color);
 
 	VBO.update(scene);
@@ -407,47 +655,9 @@ int main(void) {
 
 
 	//THE ISSUE IS THAT THE SCALING IS OFF, I NEED TO MAKE A 10X20 BOARD
-	board << 0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0;
+	board << Eigen::MatrixXi::Zero(10, 20);
 
-	lastboard << 0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0,
-					0,0,0,0,0,0,0,0,0,0;
+	lastboard << Eigen::MatrixXi::Zero(10, 20);
 
 	tempsquares << 0,0,0,0,
 								 0,0,0,0;
@@ -482,35 +692,52 @@ int main(void) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 
-		if (begun){
+		if (begun && !paused){
 
 			if(starttime == 0){
 				scene.resize(2,6);
 				scene << background;
-
-
+				scene.conservativeResize(2, 6+(200*2*3)); //6 for the background and then 200 squares, 2 triangles per square, 3 points per triangle.
+				scene << scene.block(0,0,2,6), Eigen::MatrixXf::Zero(2, 200*2*3);
+				color.conservativeResize(3, 6+(200*2*3)); //6 for the background and then 200 squares, 2 triangles per square, 3 points per triangle.
+				color << color.block(0,0,3,6), Eigen::MatrixXf::Zero(3, 200*2*3);
 				starttime = time;
 				prevtime = starttime;
 			}
 
 
-			if(inround == 0 && time - prevtime > 1){
+			if(inround == 0 && time - prevtime > speed){
 				inround = 1;
 				initializeround = 1;
 			}
 
 			if(initializeround){
 				createshape();
+				update();
 				initializeround = 0;
 			}
 
 
-			if (inround == 1 && time - prevtime > 1){ //wait one second after a round finishes before lauching the next shape
+			if (inround == 1 && time - prevtime > speed){ //wait one second after a round finishes before lauching the next shape
 				if(checkboard() == 0){
+					while(won() != -1){
+						int colm = won();
+						board.col(colm) << 0,0,0,0,0,0,0,0,0,0;
+						for(int k = colm; k < 19; k++){
+							for(int l = 0; l < 10; l++){
+								board(l,k) = board(l, k+1);
+							}
+						}
+						board.col(19) << 0,0,0,0,0,0,0,0,0,0;
 
-					won();
+						lastboard << board;
+						updatescene();
+						std::this_thread::sleep_for(std::chrono::seconds(1));
+						score += 1;
+						std::cout << "score" << score << '\n';
+						//HAVE TO MOVE THE ENTIRE SCENE DOWN
+					}
 					lastboard << board;
-
 					inround = 0;
 				} else {
 					movedown();
@@ -519,15 +746,14 @@ int main(void) {
 
 				prevtime = time; //will only update after each time the shape moves, which is every second
 			}
-			if(scene.cols() > 6){
-				updatescene();
-
-			}
-			glDrawArrays(GL_TRIANGLES, 0, scene.cols());
-
 		}
 
+		if(gaemover){
+			break;
+		}
 
+		updatescene();
+		glDrawArrays(GL_TRIANGLES, 0, scene.cols());
 
 		VBO_C.update(color);
 		VBO.update(scene);
@@ -538,6 +764,11 @@ int main(void) {
 
 		// Poll for and process events
 		glfwPollEvents();
+	}
+
+	if(gaemover){
+		std::cout << "game over" << '\n';
+		std::cout << "final score " << score << '\n';
 	}
 
 	// Deallocate opengl memory
