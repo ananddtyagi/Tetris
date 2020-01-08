@@ -419,15 +419,21 @@ int changeshape(){
 			}
 			break;
 	}
+	while(tempsquares(0,0) < 0 || tempsquares(1,0) < 0 || tempsquares(2,0) < 0 || tempsquares(3,0) < 0){
+		tempsquares << tempsquares + right;
+		center << center(0) + 1, center(1);
+	}
 
+	while(tempsquares(0,0) >= 10 || tempsquares(1,0) >= 10 || tempsquares(2,0) >= 10 || tempsquares(3,0) >= 10){
+		tempsquares << tempsquares + left;
+		center << center(0) - 1, center(1);
+
+	}
 	for (int i = 0; i < 4; i++){
 		if(lastboard(tempsquares(i,0),tempsquares(i,1)-1) == 1){ //if this next move down in that column will be a collision, end round
 			return 0;
 		}
 		if(currentsquares(i,1) == 0){
-			return 0;
-		}
-		if(shapecollisionleft() == 1 || shapecollisionright() == 1){
 			return 0;
 		}
 	}
