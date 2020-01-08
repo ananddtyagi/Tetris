@@ -12,4 +12,6 @@ Press "X" to rotate the piece clockwise, press "Z" to rotate the piece counter-c
 
 Press "P" to pause the game.
 
+Press "Shift + Q" to quit the game at any time.
+
 Have fun!
