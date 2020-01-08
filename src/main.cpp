@@ -11,6 +11,8 @@
 //Random number
 #include <stdlib.h>
 
+
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool begun = false;
@@ -462,7 +464,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if(key == GLFW_KEY_B){
 		begun = true;
 	}
-	if(key == GLFW_KEY_P && action == GLFW_PRESS){
+
+	if(mods == GLFW_MOD_SHIFT && key == GLFW_KEY_Q){
+		gaemover = true;
+	}
+
+	if((key == GLFW_KEY_P)&& action == GLFW_PRESS){
 		paused = !paused;
 	}
 
@@ -801,17 +808,17 @@ int main(void) {
 						std::this_thread::sleep_for(std::chrono::seconds(1));
 						score += 1;
 						std::cout << "score" << score << '\n';
-						//HAVE TO MOVE THE ENTIRE SCENE DOWN
 					}
 					lastboard << board;
 					inround = 0;
 				} else {
 					movedown();
-					update();
 				}
+				update();
 
 				prevtime = time; //will only update after each time the shape moves, which is every second
 			}
+
 		}
 
 		if(gaemover){
