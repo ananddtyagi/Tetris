@@ -152,6 +152,7 @@ int shapecollisionright(){
 void createshape(){ //craetes a new shape and sets it as the current shape.
 	shape = rand() % 7 + 1;
 	orientation = 0;
+
 	switch(shape){
 		case 1:
 			//square
