@@ -13,7 +13,6 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
 ////////////////////////////////////////////////////////////////////////////////
 
 bool begun = false;
@@ -27,9 +26,6 @@ VertexBufferObject VBO_T;
 
 
 int shapecols = 8*3; // 8 triangles per shape, 3 vertices each.
-
-//Texture
-Eigen::MatrixXf texturecoor(2,6);
 
 // Contains the vertex positions
 Eigen::MatrixXf background(2,6);
@@ -46,8 +42,9 @@ Eigen::MatrixXf tempsquares(4,2);
 
 Eigen::MatrixXf currentshape(2,shapecols);
 Eigen::MatrixXf tempshape(2,6);
+Eigen::VectorXf center(2);
 
-
+Eigen::MatrixXf textcoor(2,6);
 
 Eigen::MatrixXf color(3,6);
 Eigen::MatrixXf shapecolor(3,shapecols);
@@ -156,6 +153,8 @@ int shapecollisionright(){
 
 void createshape(){ //craetes a new shape and sets it as the current shape.
 	shape = rand() % 7 + 1;
+	orientation = 0;
+
 	switch(shape){
 		case 1:
 			//square
@@ -166,24 +165,29 @@ void createshape(){ //craetes a new shape and sets it as the current shape.
 			break;
 		case 2:
 			//T
-			currentsquares << 0, 20,
-												1, 21,
+			currentsquares << 1, 21,
+												0, 20,
 												1, 20,
 												2, 20;
+			center << 1, 21;
 			break;
 		case 3:
 			//I
-			currentsquares << 0, 20,
+			currentsquares << 0, 22,
+												0, 20,
 												0, 21,
-												0, 22,
 												0, 23;
+			center << 0, 22;
+
 		break;
 		case 4:
 			//Backwards L
-			currentsquares << 0, 20,
-												0, 21,
-												0, 22,
-												1, 22;
+			currentsquares << 1, 20,
+												1, 21,
+												1, 22,
+												0, 20;
+      center << 0, 21;
+
 		break;
 		case 5:
 			//L
@@ -191,6 +195,7 @@ void createshape(){ //craetes a new shape and sets it as the current shape.
 												1, 20,
 												0, 21,
 												0, 22;
+      center << 1, 21;
 		break;
 		case 6:
 			//S
@@ -198,6 +203,7 @@ void createshape(){ //craetes a new shape and sets it as the current shape.
 												1, 20,
 												1, 21,
 												2, 21;
+      center << 1, 21;
 		break;
 		case 7:
 			//Z
@@ -205,6 +211,7 @@ void createshape(){ //craetes a new shape and sets it as the current shape.
 												1, 21,
 												1, 20,
 												2, 20;
+			center << 1, 20;
 		break;
 	}
 
@@ -215,6 +222,7 @@ void createshape(){ //craetes a new shape and sets it as the current shape.
 void movedown(){
 
 	currentsquares = currentsquares + fall;
+	center << center(0), center(1)-1;
 	// currentsquares = currentsquares + speed*fall;
 
 }
@@ -239,7 +247,202 @@ int won(){
 	return -1;
 }
 
+int changeshape(){
+	switch(shape){
+		case 1:
+			tempsquares << currentsquares;
+			break;
+		case 2: //T
+			switch(orientation){
+				case 0:
+					tempsquares << center(0), center(1),
+													center(0)-1,  center(1)-1,
+													center(0),  center(1)-1,
+													center(0)+1,  center(1)-1;
 
+					break;
+				case 1:
+					tempsquares << center(0), center(1),
+													center(0)-1,  center(1)-1,
+													center(0)-1,  center(1),
+													center(0)-1,  center(1)+1;
+					break;
+				case 2:
+					tempsquares << center(0), center(1),
+													center(0)-1,  center(1)+1,
+													center(0),  center(1)+1,
+													center(0)+1,  center(1)+1;
+					break;
+				case 3:
+					tempsquares << center(0), center(1),
+													center(0)+1,  center(1)-1,
+													center(0)+1,  center(1),
+													center(0)+1,  center(1)+1;
+					break;
+			}
+			break;
+		case 3: //I
+			switch(orientation){
+				case 0:
+					tempsquares << center(0), center(1),
+											 center(0), center(1)+1,
+											 center(0), center(1)-1,
+											 center(0), center(1)-2;
+					break;
+				case 1:
+					tempsquares << center(0), center(1),
+											 center(0)+1, center(1),
+											 center(0)-1, center(1),
+											 center(0)-2, center(1);
+					break;
+				case 2:
+					tempsquares << center(0), center(1),
+											 center(0), center(1)-1,
+											 center(0), center(1)+1,
+											 center(0), center(1)+2;
+					break;
+				case 3:
+					tempsquares << center(0), center(1),
+											 center(0)-1, center(1),
+											 center(0)+1, center(1),
+											 center(0)+2, center(1);
+					break;
+			}
+			break;
+		case 4: //Backwards L
+			switch(orientation){
+				case 0:
+					tempsquares << center(0), center(1)-1,
+											 center(0)+1, center(1)-1,
+											 center(0)+1, center(1),
+											 center(0)+1, center(1)+1;
+					break;
+				case 1:
+					tempsquares << center(0)-1, center(1),
+											 center(0)-1, center(1)-1,
+											 center(0), center(1)-1,
+											 center(0)+1, center(1)-1;
+					break;
+				case 2:
+					tempsquares << center(0), center(1)+1,
+											 center(0)-1, center(1)-1,
+											 center(0)-1, center(1),
+											 center(0)-1, center(1)+1;
+					break;
+				case 3:
+					tempsquares << center(0)+1, center(1),
+											 center(0)-1, center(1)+1,
+											 center(0), center(1)+1,
+											 center(0)+1, center(1)+1;
+					break;
+			}
+			break;
+		case 5: //L
+			switch(orientation){
+				case 0:
+					tempsquares << center(0)-1, center(1)-1,
+											 center(0)-1, center(1),
+											 center(0)-1, center(1)+1,
+											 center(0), center(1)-1;
+					break;
+				case 1:
+					tempsquares << center(0)-1, center(1),
+											 center(0)-1, center(1)+1,
+											 center(0), center(1)+1,
+											 center(0)+1, center(1)+1;
+					break;
+				case 2:
+					tempsquares << center(0), center(1)+1,
+											 center(0)+1, center(1)-1,
+											 center(0)+1, center(1),
+											 center(0)+1, center(1)+1;
+					break;
+				case 3:
+					tempsquares << center(0)+1, center(1),
+											 center(0)-1, center(1)-1,
+											 center(0), center(1)-1,
+											 center(0)+1, center(1)-1;
+					break;
+			}
+			break;
+		case 6: //S
+			switch(orientation){
+				case 0:
+					tempsquares << center(0), center(1),
+											 center(0)-1, center(1)-1,
+											 center(0), center(1)-1,
+											 center(0)+1, center(1);
+					break;
+				case 1:
+					tempsquares << center(0), center(1),
+											 center(0), center(1)-1,
+											 center(0)-1, center(1),
+											 center(0)-1, center(1)+1;
+					break;
+				case 2:
+					tempsquares << center(0), center(1),
+											 center(0)-1, center(1),
+											 center(0), center(1)+1,
+											 center(0)+1, center(1)+1;
+					break;
+				case 3:
+					tempsquares << center(0), center(1)+1,
+											 center(0), center(1),
+											 center(0)+1, center(1),
+											 center(0)+1, center(1)-1;
+					break;
+			}
+			break;
+		case 7: //Z
+			switch(orientation){
+				case 0:
+					tempsquares << center(0), center(1),
+											 center(0)+1, center(1),
+											 center(0), center(1)+1,
+											 center(0)-1, center(1)+1;
+					break;
+				case 1:
+					tempsquares << center(0), center(1)-1,
+											 center(0), center(1),
+											 center(0)+1, center(1),
+											 center(0)+1, center(1)+1;
+					break;
+				case 2:
+					tempsquares << center(0)-1, center(1),
+											 center(0), center(1),
+											 center(0), center(1)-1,
+											 center(0)+1, center(1)-1;
+					break;
+				case 3:
+					tempsquares << center(0), center(1)+1,
+											 center(0), center(1),
+											 center(0)-1, center(1),
+											 center(0)-1, center(1)-1;
+					break;
+			}
+			break;
+	}
+	while(tempsquares(0,0) < 0 || tempsquares(1,0) < 0 || tempsquares(2,0) < 0 || tempsquares(3,0) < 0){
+		tempsquares << tempsquares + right;
+		center << center(0) + 1, center(1);
+	}
+
+	while(tempsquares(0,0) >= 10 || tempsquares(1,0) >= 10 || tempsquares(2,0) >= 10 || tempsquares(3,0) >= 10){
+		tempsquares << tempsquares + left;
+		center << center(0) - 1, center(1);
+
+	}
+	for (int i = 0; i < 4; i++){
+		if(lastboard(tempsquares(i,0),tempsquares(i,1)-1) == 1){ //if this next move down in that column will be a collision, end round
+			return 0;
+		}
+		if(currentsquares(i,1) == 0){
+			return 0;
+		}
+	}
+
+	return 1;
+}
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
 	// Get viewport size (canvas in number of pixels)
@@ -270,7 +473,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if(key == GLFW_KEY_B){
 		begun = true;
 	}
-	if(key == GLFW_KEY_P && action == GLFW_PRESS){
+
+	if(mods == GLFW_MOD_SHIFT && key == GLFW_KEY_Q){
+		gaemover = true;
+	}
+
+	if((key == GLFW_KEY_P)&& action == GLFW_PRESS){
 		paused = !paused;
 	}
 
@@ -278,6 +486,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		if(key == GLFW_KEY_LEFT && action == GLFW_PRESS && inround == 1){
 			if(shapecollisionleft() == 0){ //did not collide
 				currentsquares <<	currentsquares + left;
+				center << center(0)-1, center(1);
 			}
 			update();
 			updatescene();
@@ -289,6 +498,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 				if(shapecollisionright() == 0){
 					currentsquares <<	currentsquares + right;
+					center << center(0)+1, center(1);
+
 				}
 				update();
 				updatescene();
@@ -321,85 +532,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			VBO.update(scene);
 
 		}
-		if(key == GLFW_KEY_X && inround == 1){ //Clockwise
-
-				switch(shape){
-					case 2:
-						switch(orientation){
-							case 0:
-
-								break;
-							case 1:
-
-								break;
-							case 2:
-
-								break;
-							case 3:
-
-								break;
-						}
-						break;
-					case 3:
-						switch(orientation){
-							case 0:
-								break;
-							case 1:
-								break;
-							case 2:
-								break;
-							case 3:
-								break;
-						}
-						break;
-					case 4:
-						switch(orientation){
-							case 0:
-								break;
-							case 1:
-								break;
-							case 2:
-								break;
-							case 3:
-								break;
-						}
-						break;
-					case 5:
-						switch(orientation){
-							case 0:
-								break;
-							case 1:
-								break;
-							case 2:
-								break;
-							case 3:
-								break;
-						}
-						break;
-					case 6:
-						switch(orientation){
-							case 0:
-								break;
-							case 1:
-								break;
-							case 2:
-								break;
-							case 3:
-								break;
-						}
-						break;
-					case 7:
-						switch(orientation){
-							case 0:
-								break;
-							case 1:
-								break;
-							case 2:
-								break;
-							case 3:
-								break;
-						}
-						break;
+		if(key == GLFW_KEY_X && inround == 1 && action == GLFW_PRESS){ //Clockwise
+				orientation += 1;
+				orientation = (orientation + 4) % 4;
+				if(changeshape() == 0){ //can't make this rotation
+					orientation -= 1;
+					orientation = (orientation + 4) % 4;
+				} else {
+					currentsquares << tempsquares;
 				}
 
 				update();
@@ -407,82 +547,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			VBO.update(scene);
 
 		}
-		if(key == GLFW_KEY_Z && inround == 1){ //Counter Clockwise
+		if(key == GLFW_KEY_Z && inround == 1 && action == GLFW_PRESS){ //Counter Clockwise
 
-				switch(shape){
-					case 2:
-						switch(orientation){
-							case 0:
-								break;
-							case 1:
-								break;
-							case 2:
-								break;
-							case 3:
-								break;
-						}
-						break;
-					case 3:
-						switch(orientation){
-							case 0:
-								break;
-							case 1:
-								break;
-							case 2:
-								break;
-							case 3:
-								break;
-						}
-						break;
-					case 4:
-						switch(orientation){
-							case 0:
-								break;
-							case 1:
-								break;
-							case 2:
-								break;
-							case 3:
-								break;
-						}
-						break;
-					case 5:
-						switch(orientation){
-							case 0:
-								break;
-							case 1:
-								break;
-							case 2:
-								break;
-							case 3:
-								break;
-						}
-						break;
-					case 6:
-						switch(orientation){
-							case 0:
-								break;
-							case 1:
-								break;
-							case 2:
-								break;
-							case 3:
-								break;
-						}
-						break;
-					case 7:
-						switch(orientation){
-							case 0:
-								break;
-							case 1:
-								break;
-							case 2:
-								break;
-							case 3:
-								break;
-						}
-						break;
-				}
+			orientation -= 1;
+			orientation = (orientation + 4) % 4;
+			if(changeshape() == 0){ //can't make this rotation
+				orientation += 1;
+				orientation = (orientation + 4) % 4;
+			} else {
+				currentsquares << tempsquares;
+			}
 
 				update();
 				updatescene();
@@ -549,20 +623,31 @@ int main(void) {
 	printf("Supported OpenGL is %s\n", (const char*)glGetString(GL_VERSION));
 	printf("Supported GLSL is %s\n", (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	// set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	GLuint texBufferID; //open gl vars
+	GLuint texCoordID, texID; //sharder vars
 
 	int w, h, nrChannels;
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glActiveTexture(GL_TEXTURE0); 
+	glBindTexture(GL_TEXTURE_2D, texture);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// load and generate the texture
 	unsigned char *data = stbi_load(".././build/images/board.png", &w, &h, &nrChannels, 0);
+	if (data)
+	{
+	    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	    glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+	    std::cout << "Failed to load texture" << std::endl;
+	}
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-  glGenerateMipmap(GL_TEXTURE_2D);
 
 	// Initialize the VAO
 	// A Vertex Array Object (or VAO) is an object that describes how the vertex
@@ -585,21 +670,24 @@ int main(void) {
 
 	background << -1, -1, 1, 1, -1, 1,
 			 					-1,  1,-1, 1,  1,-1;
-	texturecoor << 0, 0, 1, 0, 1, 1,
-								 0, 1, 0, 1, 0, 1;
 
-  color << 1,1,1, 1,1,1,
-					1,1,1, 1,1,1,
-					1,1,1, 1,1,1;
+  color << 0.3,0.3,0.3, 0.3,0.3,0.3,
+					0.3,0.3,0.3, 0.3,0.3,0.3,
+					0.3,0.3,0.3, 0.3,0.3,0.3;
 
 	scene.resize(2,6);
 
-	scene << 0,0,0,0,0,0,
-					0,0,0,0,0,0;
+	scene << -1, -1, 1, 1, -1, 1,
+			 					-1,  1,-1, 1,  1,-1;
+
+	textcoor.resize(2,6);
+
+	textcoor << 0,0,1,0,1,1,
+							0,1,0,1,0,1;
 
 	updatescene();
-	VBO_T.update(texturecoor);
   VBO_C.update(color);
+	VBO_T.update(textcoor);
 	VBO.update(scene);
 
 	// Initialize the OpenGL Program
@@ -610,30 +698,28 @@ int main(void) {
 		#version 150 core
 		in vec2 position;
 		in vec2 textcoor;
-
 		in vec3 color;
 			out vec3 f_color;
-			out vec2 fragtext;
+		out vec2 TexCoord;
 
 		void main() {
 			gl_Position = vec4(position, 0.0, 1.0);
 			f_color = color;
-			fragtext = textcoor;
+			TexCoord = textcoor;
 		}
 	)";
 
 	const GLchar* fragment_shader = R"(
 		#version 150 core
 		in vec3 f_color;
-		in vec2 fragtext;
+		in vec2 TexCoord;
 
 		uniform sampler2D ourTexture;
 
 		out vec4 outColor;
+
 		void main() {
-
-				outColor = texture(ourTexture, fragtext);
-
+				outColor = texture(ourTexture, TexCoord);
 		}
 	)";
 
@@ -648,10 +734,8 @@ int main(void) {
 	// in the vertex shader
 	program.bindVertexAttribArray("position", VBO);
 	program.bindVertexAttribArray("color",VBO_C);
-	program.bindVertexAttribArray("textcoor",VBO_T);
+	program.bindVertexAttribArray("texCoor",VBO_T);
 
-
-	glUniform1i(program.uniform("sampler2D"),0);
 
 	// Save the current time --- it will be used to dynamically change the triangle color
 	auto t_start = std::chrono::high_resolution_clock::now();
@@ -665,6 +749,8 @@ int main(void) {
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
 	glfwGetWindowSize(window, &width_window, &height_window);
+
+	glUniform1i(program.uniform("ourTexture"), 0);
 
 	int starttime = 0;
 	int prevtime = 0;
@@ -693,8 +779,6 @@ int main(void) {
 
 	tempsquares << 0,0,0,0,
 								 0,0,0,0;
-
-
 
 	// Loop until the user closes the window
 	while (!glfwWindowShouldClose(window)) {
@@ -725,7 +809,7 @@ int main(void) {
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glBindTexture(GL_TEXTURE_2D, texture);
+
 		if (begun && !paused){
 
 			if(starttime == 0){
@@ -769,17 +853,17 @@ int main(void) {
 						std::this_thread::sleep_for(std::chrono::seconds(1));
 						score += 1;
 						std::cout << "score" << score << '\n';
-						//HAVE TO MOVE THE ENTIRE SCENE DOWN
 					}
 					lastboard << board;
 					inround = 0;
 				} else {
 					movedown();
-					update();
 				}
+				update();
 
 				prevtime = time; //will only update after each time the shape moves, which is every second
 			}
+
 		}
 
 		if(gaemover){
@@ -787,12 +871,14 @@ int main(void) {
 		}
 
 		updatescene();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glDrawArrays(GL_TRIANGLES, 0, scene.cols());
 
 		VBO_C.update(color);
-		VBO.update(scene);
-		VBO_T.update(texturecoor);
+		VBO_T.update(textcoor);
 
+		VBO.update(scene);
 
 
 		// Swap front and back buffers
@@ -809,14 +895,9 @@ int main(void) {
 
 	// Deallocate opengl memory
 	program.free();
-	stbi_image_free(data);
-
+		stbi_image_free(data);
 	VAO.free();
 	VBO.free();
-	VBO_C.free();
-	VBO_T.free();
-
-
 
 	// Deallocate glfw internals
 	glfwTerminate();

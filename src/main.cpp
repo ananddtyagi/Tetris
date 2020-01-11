@@ -23,6 +23,7 @@ VertexBufferObject VBO;
 VertexBufferObject VBO_C;
 
 
+
 int shapecols = 8*3; // 8 triangles per shape, 3 vertices each.
 
 // Contains the vertex positions
