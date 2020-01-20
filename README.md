@@ -14,4 +14,6 @@ Press "P" to pause the game.
 
 Press "Shift + Q" to quit the game at any time.
 
+Your score will show up in the terminal. 
+
 Have fun!

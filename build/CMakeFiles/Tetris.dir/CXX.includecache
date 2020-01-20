@@ -1134,39 +1134,7 @@ vector
 string
 -
 
-/Users/AnandTyagi/Desktop/Tetris/src/stb_image.h
-stb_image.h
-/Users/AnandTyagi/Desktop/Tetris/src/stb_image.h
-stdio.h
--
-stdlib.h
--
-stdarg.h
--
-stddef.h
--
-stdlib.h
--
-string.h
--
-limits.h
--
-math.h
--
-stdio.h
--
-assert.h
--
-stdint.h
--
-emmintrin.h
--
-intrin.h
--
-arm_neon.h
--
-
-/Users/AnandTyagi/Desktop/Tetris/src/texturetry2.cpp
+/Users/AnandTyagi/Desktop/Tetris/src/main.cpp
 iostream
 -
 helpers.h
@@ -1181,6 +1149,4 @@ thread
 -
 stdlib.h
 -
-stb_image.h
-/Users/AnandTyagi/Desktop/Tetris/src/stb_image.h
 

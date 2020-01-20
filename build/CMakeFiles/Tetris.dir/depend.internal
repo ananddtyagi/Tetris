@@ -146,7 +146,7 @@ CMakeFiles/Tetris.dir/src/helpers.cpp.o
  ../ext/glad/include/glad/glad.h
  /Users/AnandTyagi/Desktop/Tetris/src/helpers.cpp
  /Users/AnandTyagi/Desktop/Tetris/src/helpers.h
-CMakeFiles/Tetris.dir/src/texturetry2.cpp.o
+CMakeFiles/Tetris.dir/src/main.cpp.o
  ../ext/eigen/Eigen/Cholesky
  ../ext/eigen/Eigen/Core
  ../ext/eigen/Eigen/Dense
@@ -358,5 +358,4 @@ CMakeFiles/Tetris.dir/src/texturetry2.cpp.o
  ../ext/glad/include/glad/glad.h
  ../ext/glfw/include/GLFW/glfw3.h
  /Users/AnandTyagi/Desktop/Tetris/src/helpers.h
- /Users/AnandTyagi/Desktop/Tetris/src/stb_image.h
- /Users/AnandTyagi/Desktop/Tetris/src/texturetry2.cpp
+ /Users/AnandTyagi/Desktop/Tetris/src/main.cpp

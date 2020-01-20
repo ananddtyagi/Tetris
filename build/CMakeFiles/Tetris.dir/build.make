@@ -57,18 +57,18 @@ include CMakeFiles/Tetris.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Tetris.dir/flags.make
 
-CMakeFiles/Tetris.dir/src/texturetry2.cpp.o: CMakeFiles/Tetris.dir/flags.make
-CMakeFiles/Tetris.dir/src/texturetry2.cpp.o: ../src/texturetry2.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/AnandTyagi/Desktop/Tetris/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Tetris.dir/src/texturetry2.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Tetris.dir/src/texturetry2.cpp.o -c /Users/AnandTyagi/Desktop/Tetris/src/texturetry2.cpp
+CMakeFiles/Tetris.dir/src/main.cpp.o: CMakeFiles/Tetris.dir/flags.make
+CMakeFiles/Tetris.dir/src/main.cpp.o: ../src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/AnandTyagi/Desktop/Tetris/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Tetris.dir/src/main.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Tetris.dir/src/main.cpp.o -c /Users/AnandTyagi/Desktop/Tetris/src/main.cpp
 
-CMakeFiles/Tetris.dir/src/texturetry2.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Tetris.dir/src/texturetry2.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/AnandTyagi/Desktop/Tetris/src/texturetry2.cpp > CMakeFiles/Tetris.dir/src/texturetry2.cpp.i
+CMakeFiles/Tetris.dir/src/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Tetris.dir/src/main.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/AnandTyagi/Desktop/Tetris/src/main.cpp > CMakeFiles/Tetris.dir/src/main.cpp.i
 
-CMakeFiles/Tetris.dir/src/texturetry2.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Tetris.dir/src/texturetry2.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/AnandTyagi/Desktop/Tetris/src/texturetry2.cpp -o CMakeFiles/Tetris.dir/src/texturetry2.cpp.s
+CMakeFiles/Tetris.dir/src/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Tetris.dir/src/main.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/AnandTyagi/Desktop/Tetris/src/main.cpp -o CMakeFiles/Tetris.dir/src/main.cpp.s
 
 CMakeFiles/Tetris.dir/src/helpers.cpp.o: CMakeFiles/Tetris.dir/flags.make
 CMakeFiles/Tetris.dir/src/helpers.cpp.o: ../src/helpers.cpp
@@ -85,13 +85,13 @@ CMakeFiles/Tetris.dir/src/helpers.cpp.s: cmake_force
 
 # Object files for target Tetris
 Tetris_OBJECTS = \
-"CMakeFiles/Tetris.dir/src/texturetry2.cpp.o" \
+"CMakeFiles/Tetris.dir/src/main.cpp.o" \
 "CMakeFiles/Tetris.dir/src/helpers.cpp.o"
 
 # External object files for target Tetris
 Tetris_EXTERNAL_OBJECTS =
 
-Tetris: CMakeFiles/Tetris.dir/src/texturetry2.cpp.o
+Tetris: CMakeFiles/Tetris.dir/src/main.cpp.o
 Tetris: CMakeFiles/Tetris.dir/src/helpers.cpp.o
 Tetris: CMakeFiles/Tetris.dir/build.make
 Tetris: glfw/src/libglfw3.a
