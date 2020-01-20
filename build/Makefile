@@ -235,32 +235,32 @@ src/helpers.cpp.s:
 	$(MAKE) -f CMakeFiles/Tetris.dir/build.make CMakeFiles/Tetris.dir/src/helpers.cpp.s
 .PHONY : src/helpers.cpp.s
 
-src/main.o: src/main.cpp.o
+src/texturetry2.o: src/texturetry2.cpp.o
 
-.PHONY : src/main.o
+.PHONY : src/texturetry2.o
 
 # target to build an object file
-src/main.cpp.o:
-	$(MAKE) -f CMakeFiles/Tetris.dir/build.make CMakeFiles/Tetris.dir/src/main.cpp.o
-.PHONY : src/main.cpp.o
+src/texturetry2.cpp.o:
+	$(MAKE) -f CMakeFiles/Tetris.dir/build.make CMakeFiles/Tetris.dir/src/texturetry2.cpp.o
+.PHONY : src/texturetry2.cpp.o
 
-src/main.i: src/main.cpp.i
+src/texturetry2.i: src/texturetry2.cpp.i
 
-.PHONY : src/main.i
+.PHONY : src/texturetry2.i
 
 # target to preprocess a source file
-src/main.cpp.i:
-	$(MAKE) -f CMakeFiles/Tetris.dir/build.make CMakeFiles/Tetris.dir/src/main.cpp.i
-.PHONY : src/main.cpp.i
+src/texturetry2.cpp.i:
+	$(MAKE) -f CMakeFiles/Tetris.dir/build.make CMakeFiles/Tetris.dir/src/texturetry2.cpp.i
+.PHONY : src/texturetry2.cpp.i
 
-src/main.s: src/main.cpp.s
+src/texturetry2.s: src/texturetry2.cpp.s
 
-.PHONY : src/main.s
+.PHONY : src/texturetry2.s
 
 # target to generate assembly for a file
-src/main.cpp.s:
-	$(MAKE) -f CMakeFiles/Tetris.dir/build.make CMakeFiles/Tetris.dir/src/main.cpp.s
-.PHONY : src/main.cpp.s
+src/texturetry2.cpp.s:
+	$(MAKE) -f CMakeFiles/Tetris.dir/build.make CMakeFiles/Tetris.dir/src/texturetry2.cpp.s
+.PHONY : src/texturetry2.cpp.s
 
 # Help Target
 help:
@@ -281,9 +281,9 @@ help:
 	@echo "... src/helpers.o"
 	@echo "... src/helpers.i"
 	@echo "... src/helpers.s"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
+	@echo "... src/texturetry2.o"
+	@echo "... src/texturetry2.i"
+	@echo "... src/texturetry2.s"
 .PHONY : help
 
 

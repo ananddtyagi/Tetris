@@ -629,7 +629,7 @@ int main(void) {
 	int w, h, nrChannels;
 	unsigned int texture;
 	glGenTextures(1, &texture);
-	glActiveTexture(GL_TEXTURE0);
+
 	glBindTexture(GL_TEXTURE_2D, texture);
 	// set the texture wrapping/filtering options (on the currently bound texture object)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -637,10 +637,15 @@ int main(void) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// load and generate the texture
+
+	//specify the application mode
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
 	unsigned char *data = stbi_load(".././build/images/board.png", &w, &h, &nrChannels, 0);
+
 	if (data)
 	{
-	    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	    glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
@@ -811,7 +816,9 @@ int main(void) {
 
 
 		if (begun && !paused){
-
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture);
+			glDrawArrays(GL_TRIANGLES, 0, scene.cols());
 			if(starttime == 0){
 				scene.resize(2,6);
 				scene << background;
@@ -871,9 +878,7 @@ int main(void) {
 		}
 
 		updatescene();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glDrawArrays(GL_TRIANGLES, 0, scene.cols());
+
 
 		VBO_C.update(color);
 		VBO_T.update(textcoor);

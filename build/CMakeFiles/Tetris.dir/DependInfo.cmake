@@ -5,7 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/AnandTyagi/Desktop/Tetris/src/helpers.cpp" "/Users/AnandTyagi/Desktop/Tetris/build/CMakeFiles/Tetris.dir/src/helpers.cpp.o"
-  "/Users/AnandTyagi/Desktop/Tetris/src/main.cpp" "/Users/AnandTyagi/Desktop/Tetris/build/CMakeFiles/Tetris.dir/src/main.cpp.o"
+  "/Users/AnandTyagi/Desktop/Tetris/src/texturetry2.cpp" "/Users/AnandTyagi/Desktop/Tetris/build/CMakeFiles/Tetris.dir/src/texturetry2.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 

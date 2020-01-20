@@ -8,7 +8,7 @@ set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/)
 
 # Project sources
 add_executable(${PROJECT_NAME}
-	src/main.cpp
+	src/texturetry2.cpp
 	src/helpers.cpp
 	src/helpers.h
 )
